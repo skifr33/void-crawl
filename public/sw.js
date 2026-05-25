@@ -4,8 +4,8 @@
 // first load. Cache busted on new deploy via version key.
 // ══════════════════════════════════════════════════════
 
-const CACHE_NAME   = 'void-crawl-v1';
-const STATIC_CACHE = 'void-crawl-static-v1';
+const CACHE_NAME   = 'void-crawl-v2';
+const STATIC_CACHE = 'void-crawl-static-v2';
 
 // Assets to pre-cache on install
 const PRECACHE_URLS = [
