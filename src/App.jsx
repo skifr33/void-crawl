@@ -305,11 +305,16 @@ function playerAttack(state) {
   };
 
   if (dead) return { ...base, phase: 'EXPLORE', activeEnemy: null, combat: null };
-  return { ...base, activeEnemy: enemy, combat: { ...base.combat, turn: 'ENEMY' } };
+  // Return with turn still 'PLAYER' — doCombatAction will call enemyAttack immediately
+  return { ...base, activeEnemy: enemy };
 }
 
+// enemyAttack: always resolves to turn:'PLAYER' or phase:'DEAD'. Never leaves turn:'ENEMY'.
 function enemyAttack(state) {
   const enemy = state.activeEnemy;
+  if (!enemy) return state; // safety: no active enemy, stay put
+
+  const combatLog = state.combat?.log ?? [];
   const roll = d20();
   const hit = roll >= 10;
   let dmg = 0, clog = [], screenShake = false;
@@ -331,13 +336,13 @@ function enemyAttack(state) {
     ...state,
     player: newPlayer,
     screenShake,
-    combat: state.combat ? {
-      ...state.combat,
+    combat: {
+      ...(state.combat ?? {}),
       turn: 'PLAYER',
-      round: (state.combat.round || 1) + 1,
+      round: (state.combat?.round ?? 1) + 1,
       coverActive: false,
-      log: [...state.combat.log, ...clog],
-    } : null,
+      log: [...combatLog, ...clog],
+    },
     log: [...state.log, ...clog],
   };
 
@@ -348,39 +353,48 @@ function enemyAttack(state) {
 function doCombatAction(state, action) {
   if (state.phase !== 'COMBAT' || state.combat?.turn !== 'PLAYER') return state;
 
-  let next;
+  const combatLog = state.combat.log ?? [];
+
   if (action === 'ATTACK') {
-    next = playerAttack(state);
-  } else if (action === 'DODGE') {
+    const afterAttack = playerAttack(state);
+    // If combat is still live, resolve enemy counter immediately
+    if (afterAttack.phase === 'COMBAT') return enemyAttack(afterAttack);
+    return afterAttack;
+  }
+
+  if (action === 'DODGE') {
     const roll = d20();
     const evaded = roll >= 12;
     const clog = evaded ? [`DODGE [${roll}] — EVADED`] : [`DODGE [${roll}] — EXPOSED`];
-    next = {
+    const withLog = { ...state, combat: { ...state.combat, log: [...combatLog, ...clog] } };
+    // Dodge success: enemy whiffs, player keeps their turn
+    if (evaded) return withLog;
+    // Dodge fail: enemy gets a free hit
+    return enemyAttack(withLog);
+  }
+
+  if (action === 'COVER') {
+    const withCover = {
       ...state,
-      combat: { ...state.combat, log: [...state.combat.log, ...clog] },
+      combat: { ...state.combat, coverActive: true, log: [...combatLog, 'COVER TAKEN — next hit -2 DMG'] },
     };
-    if (!evaded) next = enemyAttack(next);
-    else next = { ...next, combat: { ...next.combat, turn: 'ENEMY' } };
-  } else if (action === 'COVER') {
-    next = {
-      ...state,
-      combat: { ...state.combat, coverActive: true, turn: 'ENEMY', log: [...state.combat.log, 'COVER TAKEN — next hit -2 DMG'] },
-    };
-  } else if (action === 'JAM') {
+    return enemyAttack(withCover);
+  }
+
+  if (action === 'JAM') {
     const roll = d20();
     const ok = roll >= 15;
-    const clog = ok ? [`JAM [${roll}] — ${state.activeEnemy.name} STUNNED`] : [`JAM [${roll}] — FAILED`];
-    next = {
-      ...state,
-      combat: { ...state.combat, turn: ok ? 'PLAYER' : 'ENEMY', log: [...state.combat.log, ...clog] },
-    };
-  } else return state;
-
-  // Auto-resolve enemy turn
-  if (next.phase === 'COMBAT' && next.combat?.turn === 'ENEMY') {
-    return enemyAttack(next);
+    const clog = ok
+      ? [`JAM [${roll}] — ${state.activeEnemy?.name} STUNNED`]
+      : [`JAM [${roll}] — FAILED`];
+    const withJam = { ...state, combat: { ...state.combat, log: [...combatLog, ...clog] } };
+    // Jam success: enemy stunned, player keeps turn
+    if (ok) return withJam;
+    // Jam fail: enemy retaliates
+    return enemyAttack(withJam);
   }
-  return next;
+
+  return state;
 }
 
 // ─── Portal ───────────────────────────────────────────────────────────────────
@@ -785,15 +799,12 @@ export default function App() {
           <div style={{fontSize:'11px', color:'#888', marginBottom:'5px', minHeight:'28px'}}>
             {cbt?.log.slice(-2).map((l,i) => <div key={i}>{l}</div>)}
           </div>
-          {cbt?.turn === 'PLAYER'
-            ? <div>
-                <button style={S.cBtn} onClick={() => combat('ATTACK')}>ATTACK</button>
-                <button style={S.cBtn} onClick={() => combat('DODGE')}>DODGE</button>
-                <button style={S.cBtn} onClick={() => combat('COVER')}>COVER</button>
-                <button style={S.cBtn} onClick={() => combat('JAM')}>JAM</button>
-              </div>
-            : <div style={{color:'#ff3914', fontSize:'14px'}}>ENEMY ACTING...</div>
-          }
+          <div>
+            <button style={S.cBtn} onClick={() => combat('ATTACK')}>ATTACK</button>
+            <button style={S.cBtn} onClick={() => combat('DODGE')}>DODGE</button>
+            <button style={S.cBtn} onClick={() => combat('COVER')}>COVER</button>
+            <button style={S.cBtn} onClick={() => combat('JAM')}>JAM</button>
+          </div>
         </div>
       )}
 
