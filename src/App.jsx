@@ -46,6 +46,247 @@ const PORTAL_TABLE = [
   'CRITICAL UPLINK — next roll auto-succeeds',
 ];
 
+// ─── Item Catalog ─────────────────────────────────────────────────────────────
+// effect keys: heal|maxhp|cells|shards|phaseRestore|forceCrit|dmgBuff|defense (equip)|dmgBonus (equip)
+
+const ITEMS = {
+  // ── FOOD (consumables) ──────────────────────────────────────────────────────
+  nutrient_paste:      { name:'NUTRIENT PASTE',       cat:'food', tier:1, price:1, desc:'Restore 2 HP',                  fx:{heal:2} },
+  ration_pack:         { name:'RATION PACK',           cat:'food', tier:1, price:1, desc:'Restore 3 HP',                  fx:{heal:3} },
+  protein_slab:        { name:'PROTEIN SLAB',          cat:'food', tier:1, price:2, desc:'Restore 4 HP',                  fx:{heal:4} },
+  energy_gel:          { name:'ENERGY GEL',            cat:'food', tier:1, price:2, desc:'Restore 2 HP, +2 cells',        fx:{heal:2,cells:2} },
+  void_fungi:          { name:'VOID FUNGI',            cat:'food', tier:1, price:1, desc:'Restore 3 HP',                  fx:{heal:3} },
+  synth_coffee:        { name:'SYNTH-COFFEE',          cat:'food', tier:1, price:1, desc:'Restore 1 HP',                  fx:{heal:1} },
+  cryo_ration:         { name:'CRYO-RATION',           cat:'food', tier:1, price:2, desc:'Restore 4 HP',                  fx:{heal:4} },
+  station_gruel:       { name:'STATION GRUEL',         cat:'food', tier:1, price:1, desc:'Restore 2 HP',                  fx:{heal:2} },
+  recycled_protein:    { name:'RECYCLED PROTEIN',      cat:'food', tier:1, price:1, desc:'Restore 3 HP',                  fx:{heal:3} },
+  combat_ration_a:     { name:'COMBAT RATION A',       cat:'food', tier:1, price:2, desc:'Restore 5 HP',                  fx:{heal:5} },
+  hydroponics_pack:    { name:'HYDROPONICS PACK',      cat:'food', tier:1, price:2, desc:'Restore 4 HP',                  fx:{heal:4} },
+  bio_capsule:         { name:'BIO-CAPSULE',           cat:'food', tier:1, price:2, desc:'Restore 3 HP',                  fx:{heal:3} },
+  glucose_shot:        { name:'GLUCOSE SHOT',          cat:'food', tier:1, price:1, desc:'Restore 2 HP',                  fx:{heal:2} },
+  iron_ration:         { name:'IRON RATION',           cat:'food', tier:1, price:2, desc:'Restore 5 HP',                  fx:{heal:5} },
+  mold_biscuit:        { name:'MOLD BISCUIT',          cat:'food', tier:1, price:1, desc:'Restore 2 HP',                  fx:{heal:2} },
+  synthetic_broth:     { name:'SYNTHETIC BROTH',       cat:'food', tier:1, price:1, desc:'Restore 3 HP',                  fx:{heal:3} },
+  nutrient_block:      { name:'NUTRIENT BLOCK',        cat:'food', tier:1, price:2, desc:'Restore 4 HP',                  fx:{heal:4} },
+  protein_strip:       { name:'PROTEIN STRIP',         cat:'food', tier:1, price:1, desc:'Restore 2 HP',                  fx:{heal:2} },
+  void_water:          { name:'VOID WATER',            cat:'food', tier:1, price:1, desc:'Restore 2 HP, +1 shard',        fx:{heal:2,shards:1} },
+  medi_spray:          { name:'MEDI-SPRAY',            cat:'food', tier:2, price:3, desc:'Restore 6 HP',                  fx:{heal:6} },
+  nano_repair_kit:     { name:'NANO-REPAIR KIT',       cat:'food', tier:2, price:4, desc:'Restore 8 HP',                  fx:{heal:8} },
+  cellular_booster:    { name:'CELLULAR BOOSTER',      cat:'food', tier:2, price:5, desc:'Restore 10 HP',                 fx:{heal:10} },
+  bioelectric_broth:   { name:'BIOELECTRIC BROTH',     cat:'food', tier:2, price:3, desc:'Restore 7 HP',                  fx:{heal:7} },
+  synth_meat:          { name:'SYNTH-MEAT RATION',     cat:'food', tier:2, price:4, desc:'Restore 8 HP',                  fx:{heal:8} },
+  quantum_nutrient:    { name:'QUANTUM NUTRIENT',      cat:'food', tier:2, price:4, desc:'Restore 8 HP, +1 shard',        fx:{heal:8,shards:1} },
+  cascade_stim:        { name:'CASCADE STIM',          cat:'food', tier:2, price:4, desc:'Restore 7 HP',                  fx:{heal:7} },
+  void_bloom_extract:  { name:'VOID BLOOM EXTRACT',    cat:'food', tier:2, price:5, desc:'Restore 10 HP',                 fx:{heal:10} },
+  phase_serum:         { name:'PHASE SERUM',           cat:'food', tier:2, price:5, desc:'Restore 6 HP, reset Phase Step',fx:{heal:6,phaseRestore:true} },
+  neural_stim:         { name:'NEURAL STIM',           cat:'food', tier:2, price:4, desc:'Restore 5 HP, next atk +3',     fx:{heal:5,dmgBuff:3} },
+  adrenaline_shot:     { name:'ADRENALINE SHOT',       cat:'food', tier:2, price:4, desc:'Restore 5 HP, next atk +2',     fx:{heal:5,dmgBuff:2} },
+  stasis_pill:         { name:'STASIS PILL',           cat:'food', tier:2, price:4, desc:'Restore 8 HP',                  fx:{heal:8} },
+  cryo_inject:         { name:'CRYO-INJECT',           cat:'food', tier:2, price:4, desc:'Restore 9 HP',                  fx:{heal:9} },
+  dark_spore_tea:      { name:'DARK SPORE TEA',        cat:'food', tier:2, price:3, desc:'Restore 8 HP',                  fx:{heal:8} },
+  void_extract:        { name:'VOID EXTRACT',          cat:'food', tier:2, price:5, desc:'Restore 10 HP',                 fx:{heal:10} },
+  regen_protocol:      { name:'REGEN PROTOCOL',        cat:'food', tier:3, price:7, desc:'Restore 15 HP',                 fx:{heal:15} },
+  full_restore:        { name:'FULL RESTORE',          cat:'food', tier:3, price:10,desc:'Restore to full HP',             fx:{healFull:true} },
+  void_ambrosia:       { name:'VOID AMBROSIA',         cat:'food', tier:3, price:8, desc:'Restore 12 HP',                 fx:{heal:12} },
+  quantum_heal:        { name:'QUANTUM HEAL',          cat:'food', tier:3, price:9, desc:'Restore 14 HP',                 fx:{heal:14} },
+  phase_restore:       { name:'PHASE RESTORE',         cat:'food', tier:3, price:8, desc:'Restore 12 HP, reset Phase Step',fx:{heal:12,phaseRestore:true} },
+  battle_brew:         { name:'BATTLE BREW',           cat:'food', tier:3, price:8, desc:'Restore 10 HP, next atk +4',    fx:{heal:10,dmgBuff:4} },
+  combat_cocktail:     { name:'COMBAT COCKTAIL',       cat:'food', tier:3, price:9, desc:'Restore 8 HP, next atk +3',     fx:{heal:8,dmgBuff:3} },
+  corruption_purge:    { name:'CORRUPTION PURGE',      cat:'food', tier:3, price:8, desc:'Restore 10 HP, -1 corruption',  fx:{heal:10,corruption:-1} },
+  cellular_rebuild:    { name:'CELLULAR REBUILD',      cat:'food', tier:3, price:9, desc:'+3 max HP permanently',         fx:{maxhp:3} },
+  neural_override:     { name:'NEURAL OVERRIDE',       cat:'food', tier:3, price:9, desc:'Next Signal Lost → Crit Uplink',fx:{forceCrit:true} },
+  echo_suppressant:    { name:'ECHO SUPPRESSANT',      cat:'food', tier:3, price:7, desc:'Restore 12 HP',                 fx:{heal:12} },
+  void_core_extract:   { name:'VOID CORE EXTRACT',     cat:'food', tier:3, price:9, desc:'Restore 15 HP',                 fx:{heal:15} },
+  prime_biomass:       { name:'PRIME BIOMASS',         cat:'food', tier:3, price:9, desc:'Restore 16 HP',                 fx:{heal:16} },
+  omega_ration:        { name:'OMEGA RATION',          cat:'food', tier:3, price:12,desc:'Restore 20 HP',                 fx:{heal:20} },
+  signal_booster_food: { name:'SIGNAL BOOSTER',        cat:'food', tier:3, price:8, desc:'Restore 8 HP, reset Phase Step',fx:{heal:8,phaseRestore:true} },
+  dark_matter_meal:    { name:'DARK MATTER MEAL',      cat:'food', tier:3, price:8, desc:'Restore 12 HP, +2 shards',      fx:{heal:12,shards:2} },
+  singularity_soup:    { name:'SINGULARITY SOUP',      cat:'food', tier:3, price:11,desc:'Restore 18 HP',                 fx:{heal:18} },
+  combat_ration_b:     { name:'COMBAT RATION B',       cat:'food', tier:2, price:3, desc:'Restore 7 HP',                  fx:{heal:7} },
+
+  // ── WEAPONS (equippable, +dmgBonus to all attacks) ─────────────────────────
+  scrap_blade:         { name:'SCRAP BLADE',           cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  shock_baton:         { name:'SHOCK BATON',           cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  pulse_pistol:        { name:'PULSE PISTOL',          cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  void_shiv:           { name:'VOID SHIV',             cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  makeshift_rifle:     { name:'MAKESHIFT RIFLE',       cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  static_knuckles:     { name:'STATIC KNUCKLES',       cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  jury_rigged_smg:     { name:'JURY-RIGGED SMG',       cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  broken_sword:        { name:'BROKEN SWORD',          cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  signal_disruptor:    { name:'SIGNAL DISRUPTOR',      cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  overcharged_pistol:  { name:'OVERCHARGED PISTOL',    cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  rusty_machete:       { name:'RUSTY MACHETE',         cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  copper_flail:        { name:'COPPER WIRE FLAIL',     cat:'weapon', tier:1, price:2,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  bent_pipe:           { name:'BENT PIPE',             cat:'weapon', tier:1, price:1,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  cracked_railgun:     { name:'CRACKED RAILGUN',       cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  void_shard_knife:    { name:'VOID SHARD KNIFE',      cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  station_wrench:      { name:'STATION WRENCH',        cat:'weapon', tier:1, price:1,  desc:'Dmg +1',  fx:{dmgBonus:1} },
+  shock_rod:           { name:'SHOCK ROD',             cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  scavenged_blaster:   { name:'SCAVENGED BLASTER',     cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  fragment_pistol:     { name:'FRAGMENT PISTOL',       cat:'weapon', tier:1, price:3,  desc:'Dmg +2',  fx:{dmgBonus:2} },
+  plasma_cutter:       { name:'PLASMA CUTTER',         cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  neural_disruptor_w:  { name:'NEURAL DISRUPTOR',      cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  phase_blade:         { name:'PHASE BLADE',           cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  scatter_cannon:      { name:'SCATTER CANNON',        cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  void_rifle:          { name:'VOID RIFLE',            cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  corrosion_injector:  { name:'CORROSION INJECTOR',    cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  gravity_mace:        { name:'GRAVITY MACE',          cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  emp_pistol:          { name:'EMP PISTOL',            cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  bio_blade:           { name:'BIO-BLADE',             cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  quantum_sniper:      { name:'QUANTUM SNIPER',        cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  dark_matter_gun:     { name:'DARK MATTER GUN',       cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  echo_lance:          { name:'ECHO LANCE',            cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  phase_hook:          { name:'PHASE HOOK',            cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  static_cannon:       { name:'STATIC CANNON',         cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  void_cutter:         { name:'VOID CUTTER',           cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  signal_rifle:        { name:'SIGNAL RIFLE',          cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  entropy_blade:       { name:'ENTROPY BLADE',         cat:'weapon', tier:2, price:5,  desc:'Dmg +3',  fx:{dmgBonus:3} },
+  cryo_lance:          { name:'CRYO-LANCE',            cat:'weapon', tier:2, price:6,  desc:'Dmg +4',  fx:{dmgBonus:4} },
+  annihilator_array:   { name:'ANNIHILATOR ARRAY',     cat:'weapon', tier:3, price:9,  desc:'Dmg +6',  fx:{dmgBonus:6} },
+  void_cannon:         { name:'VOID CANNON',           cat:'weapon', tier:3, price:9,  desc:'Dmg +6',  fx:{dmgBonus:6} },
+  phase_katana:        { name:'PHASE KATANA',          cat:'weapon', tier:3, price:8,  desc:'Dmg +5',  fx:{dmgBonus:5} },
+  soul_ripper:         { name:'SOUL RIPPER',           cat:'weapon', tier:3, price:10, desc:'Dmg +7',  fx:{dmgBonus:7} },
+  plasma_lance:        { name:'PLASMA LANCE',          cat:'weapon', tier:3, price:9,  desc:'Dmg +6',  fx:{dmgBonus:6} },
+  dark_matter_rifle:   { name:'DARK MATTER RIFLE',     cat:'weapon', tier:3, price:9,  desc:'Dmg +6',  fx:{dmgBonus:6} },
+  entropy_gun:         { name:'ENTROPY GUN',           cat:'weapon', tier:3, price:10, desc:'Dmg +7',  fx:{dmgBonus:7} },
+  quantum_blade:       { name:'QUANTUM BLADE',         cat:'weapon', tier:3, price:8,  desc:'Dmg +5',  fx:{dmgBonus:5} },
+  singularity_pistol:  { name:'SINGULARITY PISTOL',    cat:'weapon', tier:3, price:10, desc:'Dmg +7',  fx:{dmgBonus:7} },
+  void_annihilator:    { name:'VOID ANNIHILATOR',      cat:'weapon', tier:3, price:11, desc:'Dmg +8',  fx:{dmgBonus:8} },
+  corrupted_railgun:   { name:'CORRUPTED RAILGUN',     cat:'weapon', tier:3, price:9,  desc:'Dmg +6',  fx:{dmgBonus:6} },
+  phantom_edge:        { name:'PHANTOM EDGE',          cat:'weapon', tier:3, price:8,  desc:'Dmg +5',  fx:{dmgBonus:5} },
+  echo_disruptor:      { name:'ECHO DISRUPTOR',        cat:'weapon', tier:3, price:9,  desc:'Dmg +6',  fx:{dmgBonus:6} },
+  signal_decimator:    { name:'SIGNAL DECIMATOR',      cat:'weapon', tier:3, price:10, desc:'Dmg +7',  fx:{dmgBonus:7} },
+  station_destroyer:   { name:'STATION DESTROYER',     cat:'weapon', tier:3, price:11, desc:'Dmg +8',  fx:{dmgBonus:8} },
+
+  // ── ARMOR (equippable, -defense from incoming damage) ───────────────────────
+  scrap_plating:       { name:'SCRAP PLATING',         cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  makeshift_vest:      { name:'MAKESHIFT VEST',        cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  void_mesh:           { name:'VOID MESH',             cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  cracked_shield:      { name:'CRACKED SHIELD',        cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  station_uniform:     { name:'STATION UNIFORM',       cat:'armor', tier:1, price:1,  desc:'Def 1',  fx:{defense:1} },
+  rubber_padding:      { name:'RUBBER PADDING',        cat:'armor', tier:1, price:1,  desc:'Def 1',  fx:{defense:1} },
+  copper_weave:        { name:'COPPER WEAVE',          cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  salvaged_plate:      { name:'SALVAGED PLATE',        cat:'armor', tier:1, price:3,  desc:'Def 2',  fx:{defense:2} },
+  signal_dampener:     { name:'SIGNAL DAMPENER',       cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  static_wrap:         { name:'STATIC WRAP',           cat:'armor', tier:1, price:1,  desc:'Def 1',  fx:{defense:1} },
+  broken_carapace:     { name:'BROKEN CARAPACE',       cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  torn_body_armor:     { name:'TORN BODY ARMOR',       cat:'armor', tier:1, price:3,  desc:'Def 2',  fx:{defense:2} },
+  void_cloth:          { name:'VOID CLOTH',            cat:'armor', tier:1, price:1,  desc:'Def 1',  fx:{defense:1} },
+  scavenged_plating:   { name:'SCAVENGED PLATING',     cat:'armor', tier:1, price:3,  desc:'Def 2',  fx:{defense:2} },
+  jury_rigged_vest:    { name:'JURY-RIGGED VEST',      cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  cracked_helmet:      { name:'CRACKED HELMET',        cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  carbon_fragments:    { name:'CARBON FRAGMENTS',      cat:'armor', tier:1, price:3,  desc:'Def 2',  fx:{defense:2} },
+  shock_mesh:          { name:'SHOCK MESH',            cat:'armor', tier:1, price:2,  desc:'Def 1',  fx:{defense:1} },
+  station_hazmat:      { name:'STATION HAZMAT',        cat:'armor', tier:1, price:3,  desc:'Def 2',  fx:{defense:2} },
+  phase_vest:          { name:'PHASE VEST',            cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  neural_weave:        { name:'NEURAL WEAVE',          cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  echo_armor:          { name:'ECHO ARMOR',            cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  void_plate:          { name:'VOID PLATE',            cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  signal_shield:       { name:'SIGNAL SHIELD',         cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  corrupted_plating:   { name:'CORRUPTED PLATING',     cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  quantum_mesh:        { name:'QUANTUM MESH',          cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  plasma_shield:       { name:'PLASMA SHIELD',         cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  bio_armor:           { name:'BIO-ARMOR',             cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  cryo_plating:        { name:'CRYO-PLATING',          cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  dark_matter_vest:    { name:'DARK MATTER VEST',      cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  entropy_shield:      { name:'ENTROPY SHIELD',        cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  phase_plate:         { name:'PHASE PLATE',           cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  static_barrier:      { name:'STATIC BARRIER',        cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  void_carapace:       { name:'VOID CARAPACE',         cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  echo_shield:         { name:'ECHO SHIELD',           cat:'armor', tier:2, price:5,  desc:'Def 3',  fx:{defense:3} },
+  signal_plating:      { name:'SIGNAL PLATING',        cat:'armor', tier:2, price:6,  desc:'Def 4',  fx:{defense:4} },
+  annihilator_shell:   { name:'ANNIHILATOR SHELL',     cat:'armor', tier:3, price:8,  desc:'Def 5',  fx:{defense:5} },
+  void_fortress:       { name:'VOID FORTRESS',         cat:'armor', tier:3, price:10, desc:'Def 6',  fx:{defense:6} },
+  phase_carapace:      { name:'PHASE CARAPACE',        cat:'armor', tier:3, price:8,  desc:'Def 5',  fx:{defense:5} },
+  quantum_armor:       { name:'QUANTUM ARMOR',         cat:'armor', tier:3, price:10, desc:'Def 6',  fx:{defense:6} },
+  plasma_weave:        { name:'PLASMA WEAVE',          cat:'armor', tier:3, price:10, desc:'Def 6',  fx:{defense:6} },
+  singularity_shield:  { name:'SINGULARITY SHIELD',    cat:'armor', tier:3, price:11, desc:'Def 7',  fx:{defense:7} },
+  echo_fortress:       { name:'ECHO FORTRESS',         cat:'armor', tier:3, price:8,  desc:'Def 5',  fx:{defense:5} },
+  dark_matter_plate:   { name:'DARK MATTER PLATE',     cat:'armor', tier:3, price:10, desc:'Def 6',  fx:{defense:6} },
+  entropy_carapace:    { name:'ENTROPY CARAPACE',      cat:'armor', tier:3, price:11, desc:'Def 7',  fx:{defense:7} },
+  corrupted_fortress:  { name:'CORRUPTED FORTRESS',    cat:'armor', tier:3, price:10, desc:'Def 6',  fx:{defense:6} },
+  station_shield_p:    { name:'STATION SHIELD PRIME',  cat:'armor', tier:3, price:8,  desc:'Def 5',  fx:{defense:5} },
+  void_matrix_armor:   { name:'VOID MATRIX ARMOR',     cat:'armor', tier:3, price:11, desc:'Def 7',  fx:{defense:7} },
+  phantom_carapace:    { name:'PHANTOM CARAPACE',      cat:'armor', tier:3, price:8,  desc:'Def 5',  fx:{defense:5} },
+  signal_prime_plate:  { name:'SIGNAL PRIME PLATING',  cat:'armor', tier:3, price:10, desc:'Def 6',  fx:{defense:6} },
+  omega_shell:         { name:'OMEGA SHELL',           cat:'armor', tier:3, price:12, desc:'Def 8',  fx:{defense:8} },
+  absolute_barrier:    { name:'ABSOLUTE BARRIER',      cat:'armor', tier:3, price:11, desc:'Def 7',  fx:{defense:7} },
+  zero_point_armor:    { name:'ZERO POINT ARMOR',      cat:'armor', tier:3, price:12, desc:'Def 8',  fx:{defense:8} },
+
+  // ── MISC / OTHER ────────────────────────────────────────────────────────────
+  signal_booster_m:    { name:'SIGNAL BOOSTER',        cat:'misc', tier:1, price:1,  desc:'+2 power cells',              fx:{cells:2} },
+  shard_magnet:        { name:'SHARD MAGNET',          cat:'misc', tier:1, price:1,  desc:'+1 data shard',               fx:{shards:1} },
+  fuel_cell:           { name:'FUEL CELL',             cat:'misc', tier:1, price:2,  desc:'+3 power cells',              fx:{cells:3} },
+  shard_cluster:       { name:'SHARD CLUSTER',         cat:'misc', tier:1, price:2,  desc:'+2 data shards',              fx:{shards:2} },
+  power_chip:          { name:'POWER CHIP',            cat:'misc', tier:1, price:2,  desc:'+2 power cells',              fx:{cells:2} },
+  patch_kit:           { name:'PATCH KIT',             cat:'misc', tier:1, price:2,  desc:'+1 max HP',                   fx:{maxhp:1} },
+  nano_patch:          { name:'NANO-PATCH',            cat:'misc', tier:1, price:2,  desc:'+1 max HP',                   fx:{maxhp:1} },
+  static_core:         { name:'STATIC CORE',           cat:'misc', tier:1, price:2,  desc:'+2 power cells',              fx:{cells:2} },
+  data_fragment:       { name:'DATA FRAGMENT',         cat:'misc', tier:1, price:1,  desc:'+1 shard',                    fx:{shards:1} },
+  void_particle:       { name:'VOID PARTICLE',         cat:'misc', tier:1, price:1,  desc:'+1 shard',                    fx:{shards:1} },
+  signal_amp:          { name:'SIGNAL AMP',            cat:'misc', tier:1, price:2,  desc:'Next atk +1 dmg',             fx:{dmgBuff:1} },
+  cracked_lens:        { name:'CRACKED LENS',          cat:'misc', tier:1, price:1,  desc:'+1 shard',                    fx:{shards:1} },
+  memory_core:         { name:'MEMORY CORE',           cat:'misc', tier:1, price:2,  desc:'+2 power cells',              fx:{cells:2} },
+  void_tracker:        { name:'VOID TRACKER',          cat:'misc', tier:1, price:2,  desc:'+1 shard, +1 cell',           fx:{shards:1,cells:1} },
+  echo_trace:          { name:'ECHO TRACE',            cat:'misc', tier:1, price:2,  desc:'+1 max HP',                   fx:{maxhp:1} },
+  copper_fragment:     { name:'COPPER FRAGMENT',       cat:'misc', tier:1, price:1,  desc:'+1 shard',                    fx:{shards:1} },
+  static_filter:       { name:'STATIC FILTER',         cat:'misc', tier:1, price:1,  desc:'+1 power cell',               fx:{cells:1} },
+  broken_lens:         { name:'BROKEN LENS',           cat:'misc', tier:1, price:1,  desc:'+1 shard',                    fx:{shards:1} },
+  residual_charge:     { name:'RESIDUAL CHARGE',       cat:'misc', tier:1, price:2,  desc:'+3 power cells',              fx:{cells:3} },
+  phase_amplifier:     { name:'PHASE AMPLIFIER',       cat:'misc', tier:2, price:5,  desc:'Reset Phase Step',            fx:{phaseRestore:true} },
+  void_engine_shard:   { name:'VOID ENGINE SHARD',     cat:'misc', tier:2, price:4,  desc:'+4 power cells',              fx:{cells:4} },
+  quantum_lens:        { name:'QUANTUM LENS',          cat:'misc', tier:2, price:5,  desc:'+2 max HP',                   fx:{maxhp:2} },
+  data_vault:          { name:'DATA VAULT',            cat:'misc', tier:2, price:4,  desc:'+3 shards',                   fx:{shards:3} },
+  static_amplifier:    { name:'STATIC AMPLIFIER',      cat:'misc', tier:2, price:4,  desc:'Next atk +2 dmg',             fx:{dmgBuff:2} },
+  echo_dampener:       { name:'ECHO DAMPENER',         cat:'misc', tier:2, price:5,  desc:'+2 max HP',                   fx:{maxhp:2} },
+  corruption_filter:   { name:'CORRUPTION FILTER',     cat:'misc', tier:2, price:5,  desc:'-1 corruption',               fx:{corruption:-1} },
+  void_fragment_p:     { name:'VOID FRAGMENT PRIME',   cat:'misc', tier:2, price:4,  desc:'+3 power cells',              fx:{cells:3} },
+  phase_core:          { name:'PHASE CORE',            cat:'misc', tier:2, price:5,  desc:'Reset Phase Step',            fx:{phaseRestore:true} },
+  echo_core:           { name:'ECHO CORE',             cat:'misc', tier:2, price:5,  desc:'+3 max HP',                   fx:{maxhp:3} },
+  quantum_cell:        { name:'QUANTUM CELL',          cat:'misc', tier:2, price:4,  desc:'+6 power cells',              fx:{cells:6} },
+  void_matrix:         { name:'VOID MATRIX',           cat:'misc', tier:2, price:4,  desc:'+3 shards',                   fx:{shards:3} },
+  nano_rebuild:        { name:'NANO-REBUILD KIT',      cat:'misc', tier:2, price:5,  desc:'+3 max HP',                   fx:{maxhp:3} },
+  signal_override:     { name:'SIGNAL OVERRIDE',       cat:'misc', tier:2, price:5,  desc:'Next atk +3 dmg',             fx:{dmgBuff:3} },
+  combat_injector:     { name:'COMBAT INJECTOR',       cat:'misc', tier:2, price:4,  desc:'Next atk +2 dmg',             fx:{dmgBuff:2} },
+  shard_processor:     { name:'SHARD PROCESSOR',       cat:'misc', tier:2, price:4,  desc:'+4 shards',                   fx:{shards:4} },
+  singularity_core:    { name:'SINGULARITY CORE',      cat:'misc', tier:3, price:8,  desc:'Phase Step + +4 max HP',      fx:{phaseRestore:true,maxhp:4} },
+  void_prime_engine:   { name:'VOID PRIME ENGINE',     cat:'misc', tier:3, price:7,  desc:'+8 power cells',              fx:{cells:8} },
+  echo_matrix_prime:   { name:'ECHO MATRIX PRIME',     cat:'misc', tier:3, price:8,  desc:'+5 max HP',                   fx:{maxhp:5} },
+  quantum_override:    { name:'QUANTUM OVERRIDE',      cat:'misc', tier:3, price:9,  desc:'Force next Crit Uplink',      fx:{forceCrit:true} },
+  signal_prime_core:   { name:'SIGNAL PRIME CORE',     cat:'misc', tier:3, price:8,  desc:'Phase Step + +3 max HP',      fx:{phaseRestore:true,maxhp:3} },
+  dark_matter_core:    { name:'DARK MATTER CORE',      cat:'misc', tier:3, price:7,  desc:'+5 shards',                   fx:{shards:5} },
+  entropy_engine:      { name:'ENTROPY ENGINE',        cat:'misc', tier:3, price:7,  desc:'+8 power cells',              fx:{cells:8} },
+  absolute_phase:      { name:'ABSOLUTE PHASE',        cat:'misc', tier:3, price:10, desc:'Phase Step + force Crit',     fx:{phaseRestore:true,forceCrit:true} },
+  omega_signal:        { name:'OMEGA SIGNAL',          cat:'misc', tier:3, price:10, desc:'Force Crit + +3 max HP',      fx:{forceCrit:true,maxhp:3} },
+  void_singularity:    { name:'VOID SINGULARITY',      cat:'misc', tier:3, price:8,  desc:'+6 shards',                   fx:{shards:6} },
+  phase_matrix_prime:  { name:'PHASE MATRIX PRIME',    cat:'misc', tier:3, price:8,  desc:'+4 max HP',                   fx:{maxhp:4} },
+  signal_nexus:        { name:'SIGNAL NEXUS',          cat:'misc', tier:3, price:8,  desc:'+8 cells, +2 shards',         fx:{cells:8,shards:2} },
+  quantum_nexus:       { name:'QUANTUM NEXUS',         cat:'misc', tier:3, price:9,  desc:'Phase Step + +5 max HP',      fx:{phaseRestore:true,maxhp:5} },
+  echo_prime_engine:   { name:'ECHO PRIME ENGINE',     cat:'misc', tier:3, price:8,  desc:'+6 cells, +3 max HP',         fx:{cells:6,maxhp:3} },
+  station_core_prime:  { name:'STATION CORE PRIME',    cat:'misc', tier:3, price:8,  desc:'+4 shards, +4 cells',         fx:{shards:4,cells:4} },
+  absolute_core:       { name:'ABSOLUTE CORE',         cat:'misc', tier:3, price:9,  desc:'+6 max HP, Phase Step',       fx:{maxhp:6,phaseRestore:true} },
+  corruption_prime:    { name:'CORRUPTION PURGE PRIME',cat:'misc', tier:3, price:9,  desc:'-2 corruption, +2 max HP',    fx:{corruption:-2,maxhp:2} },
+  void_nexus:          { name:'VOID NEXUS',            cat:'misc', tier:3, price:9,  desc:'+5 shards, +5 cells',         fx:{shards:5,cells:5} },
+};
+
+// Merchant types and what tiers they stock
+const MERCHANT_TYPES = {
+  bot:      { name:'VENDOR BOT',          char:'$', color:'#ffcc00', tiers:[1,2,3], cats:['food','weapon','armor','misc'], stockSize:6 },
+  vending:  { name:'VEND-O-MATIC',        char:'V', color:'#00ccff', tiers:[1,2],   cats:['food','misc'],                  stockSize:5 },
+  particle: { name:'PARTICLE GENERATOR',  char:'P', color:'#ff44ff', tiers:[2,3],   cats:['weapon','armor','misc'],        stockSize:5 },
+};
+
+function merchantStock(type, deck) {
+  const mt = MERCHANT_TYPES[type];
+  const maxTier = deck; // deck 1→tier1, deck 2→tier1-2, deck 3→tier1-3
+  const eligible = Object.entries(ITEMS)
+    .filter(([, it]) => mt.cats.includes(it.cat) && it.tier <= maxTier && mt.tiers.includes(it.tier))
+    .map(([id, it]) => ({ id, ...it }));
+  // Pick stockSize random unique items
+  const shuffled = eligible.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, mt.stockSize);
+}
+
 // ─── Dice ─────────────────────────────────────────────────────────────────────
 
 const d20 = () => Math.floor(Math.random() * 20) + 1;
@@ -146,7 +387,22 @@ function generateMap(deck) {
     enemies.push({ id: `e${i}`, ...def, maxHp: def.hp, pos: { x: ex, y: ey }, alive: true });
   });
 
-  return { grid, rooms, startPos, portalPos, enemies };
+  // Spawn merchants — 1 per 3 rooms, random type, skip first & last
+  const merchants = [];
+  rooms.slice(1, -1).forEach((room, i) => {
+    if (i % 3 !== 0) return;
+    const types = Object.keys(MERCHANT_TYPES);
+    const mType = types[Math.floor(Math.random() * types.length)];
+    // Place in room corner away from enemy
+    const mx = room.x + room.w - 2;
+    const my = room.y + 1;
+    if (mx > 0 && mx < W-1 && my > 0 && my < H-1) {
+      grid[my][mx] = makeTile('merchant_' + mType);
+      merchants.push({ id: `m${i}`, type: mType, pos: { x: mx, y: my } });
+    }
+  });
+
+  return { grid, rooms, startPos, portalPos, enemies, merchants };
 }
 
 // ─── Fog of War ───────────────────────────────────────────────────────────────
@@ -166,11 +422,17 @@ function revealFog(grid, pos, radius = 4) {
 // ─── Initial State ────────────────────────────────────────────────────────────
 
 function makePlayer() {
-  return { hp: 20, maxHp: 20, powerCells: 12, dataShards: 0, corruptedFragments: 0, phaseStepUsed: false };
+  return {
+    hp: 20, maxHp: 20, powerCells: 12, dataShards: 0, corruptedFragments: 0,
+    phaseStepUsed: false,
+    inventory: [],          // array of { id, ...itemDef }
+    equipped: { weapon: null, armor: null },
+    dmgBuff: 0,             // temp bonus applied to next attack
+  };
 }
 
 function buildState(deck, player) {
-  const { grid, rooms, startPos, portalPos, enemies } = generateMap(deck);
+  const { grid, rooms, startPos, portalPos, enemies, merchants } = generateMap(deck);
   return {
     phase: 'EXPLORE',
     deck,
@@ -180,8 +442,10 @@ function buildState(deck, player) {
     playerPos: startPos,
     portalPos,
     enemies,
+    merchants,
     combat: null,
     activeEnemy: null,
+    activeMerchant: null,   // { type, stock: [...items] }
     log: [`DECK ${deck}: ${DECKS[deck].name} — BREACH INITIATED`],
     rollResult: null,
     portalRoll: null,
@@ -199,8 +463,17 @@ function walkable(grid, enemies, pos) {
   if (x < 0 || x >= W || y < 0 || y >= H) return false;
   const t = grid[y]?.[x];
   if (!t || t.type === 'wall') return false;
+  // merchant tiles are enterable (triggers shop)
   if (enemies.some(e => e.alive && e.pos.x === x && e.pos.y === y)) return false;
   return true;
+}
+
+function isMerchantTile(tile) {
+  return tile?.type?.startsWith('merchant_');
+}
+
+function merchantTypeFromTile(tile) {
+  return tile?.type?.replace('merchant_', '');
 }
 
 // ─── Enemy AI ─────────────────────────────────────────────────────────────────
@@ -270,12 +543,16 @@ function playerAttack(state) {
 
   let dmg = 0, clog = [], glitch = false, screenShake = false;
 
+  const weaponBonus = (newPlayer.equipped?.weapon?.fx?.dmgBonus ?? 0);
+  const buffBonus   = newPlayer.dmgBuff ?? 0;
+  newPlayer = { ...newPlayer, dmgBuff: 0 }; // consume buff
+
   if (roll.result === 'CRITICAL_UPLINK') {
-    dmg = d6() + 4;
+    dmg = d6() + 4 + weaponBonus + buffBonus;
     clog.push(`CRITICAL UPLINK [${roll.a}/${roll.b}] — ${dmg} DMG`);
     screenShake = true;
   } else if (roll.result === 'STATIC_PASS') {
-    dmg = d6();
+    dmg = d6() + weaponBonus + buffBonus;
     clog.push(`STATIC PASS [${roll.a}/${roll.b}] — ${dmg} DMG`);
   } else {
     clog.push(`SIGNAL LOST [${roll.a}/${roll.b}] — MISS`);
@@ -320,9 +597,11 @@ function enemyAttack(state) {
   let dmg = 0, clog = [], screenShake = false;
 
   if (hit) {
-    dmg = Math.ceil(enemy.atk / 2) + (roll >= 18 ? 2 : 0);
+    const armorDef  = state.player.equipped?.armor?.fx?.defense ?? 0;
+    dmg = Math.max(0, Math.ceil(enemy.atk / 2) + (roll >= 18 ? 2 : 0) - armorDef);
     if (state.combat?.coverActive) dmg = Math.max(0, dmg - 2);
-    clog.push(`${enemy.name} [${roll}] — ${dmg} DMG${state.combat?.coverActive ? ' (COVER)' : ''}`);
+    const tags = [state.combat?.coverActive && 'COVER', armorDef > 0 && `ARM-${armorDef}`].filter(Boolean).join(' ');
+    clog.push(`${enemy.name} [${roll}] — ${dmg} DMG${tags ? ` (${tags})` : ''}`);
     screenShake = true;
   } else {
     clog.push(`${enemy.name} [${roll}] — MISS`);
@@ -431,19 +710,77 @@ function enterPortal(state) {
   };
 }
 
+// ─── Item Logic ───────────────────────────────────────────────────────────────
+
+// Apply a consumable item's fx to player state. Returns [newPlayer, newForceNext].
+function applyItemFx(player, fx, forceNext) {
+  let p = { ...player };
+  let fn = forceNext;
+  if (fx.heal)         p.hp = Math.min(p.maxHp, p.hp + fx.heal);
+  if (fx.healFull)     p.hp = p.maxHp;
+  if (fx.maxhp)        { p.maxHp += fx.maxhp; p.hp += fx.maxhp; }
+  if (fx.cells)        p.powerCells = Math.min(p.maxPowerCells ?? 99, p.powerCells + fx.cells);
+  if (fx.shards)       p.dataShards += fx.shards;
+  if (fx.phaseRestore) p.phaseStepUsed = false;
+  if (fx.dmgBuff)      p.dmgBuff = (p.dmgBuff || 0) + fx.dmgBuff;
+  if (fx.corruption)   p.corruptedFragments = Math.max(0, (p.corruptedFragments || 0) + fx.corruption);
+  if (fx.forceCrit)    fn = 'CRITICAL_UPLINK';
+  return [p, fn];
+}
+
+function buyItem(state, item) {
+  const { player } = state;
+  if (player.dataShards < item.price) return state; // can't afford
+
+  let newPlayer = { ...player, dataShards: player.dataShards - item.price };
+  let newForceNext = state.forceNext;
+
+  if (item.cat === 'weapon') {
+    // Equip immediately, old weapon dropped
+    newPlayer = { ...newPlayer, equipped: { ...newPlayer.equipped, weapon: item } };
+  } else if (item.cat === 'armor') {
+    newPlayer = { ...newPlayer, equipped: { ...newPlayer.equipped, armor: item } };
+  } else {
+    // food / misc: add to inventory (max 8 slots)
+    if (newPlayer.inventory.length >= 8) return { ...state, log: [...state.log, 'INVENTORY FULL'] };
+    newPlayer = { ...newPlayer, inventory: [...newPlayer.inventory, item] };
+  }
+
+  return {
+    ...state,
+    player: newPlayer,
+    forceNext: newForceNext,
+    log: [...state.log, `PURCHASED: ${item.name} (${item.price} SHARDS)`],
+  };
+}
+
+function useInventoryItem(state, idx) {
+  const item = state.player.inventory[idx];
+  if (!item) return state;
+  const newInv = state.player.inventory.filter((_, i) => i !== idx);
+  const [newPlayer, newForceNext] = applyItemFx({ ...state.player, inventory: newInv }, item.fx, state.forceNext);
+  return {
+    ...state,
+    player: newPlayer,
+    forceNext: newForceNext,
+    log: [...state.log, `USED: ${item.name}`],
+  };
+}
+
 // ─── Quick Save / Load ────────────────────────────────────────────────────────
 
 const SAVE_KEY = 'void-crawl-qs';
 
 function saveGame(state) {
   const payload = {
-    phase: state.phase,
+    phase: state.phase === 'SHOP' ? 'EXPLORE' : state.phase, // don't save mid-shop
     deck: state.deck,
     grid: state.grid,
     player: state.player,
     playerPos: state.playerPos,
     portalPos: state.portalPos,
     enemies: state.enemies,
+    merchants: state.merchants,
     combat: state.combat,
     activeEnemy: state.activeEnemy,
     log: state.log.slice(-20),
@@ -518,6 +855,16 @@ function drawFrame(canvas, state, t) {
         ctx.fillRect(px, py, TS, TS);
         ctx.fillStyle = `rgba(200, 0, 255, ${0.6 + pulse * 0.4})`;
         ctx.fillText('◉', px + 1, py);
+      } else if (isMerchantTile(tile)) {
+        const mType = merchantTypeFromTile(tile);
+        const mt = MERCHANT_TYPES[mType];
+        ctx.fillStyle = lit ? '#1a1400' : '#0d0a00';
+        ctx.fillRect(px, py, TS, TS);
+        if (lit) {
+          const blink = Math.sin(t * 0.004 + x) > 0;
+          ctx.fillStyle = blink ? mt.color : '#886600';
+          ctx.fillText(mt.char, px + 1, py);
+        }
       } else if (tile.type === 'wall') {
         ctx.fillStyle = lit ? C.wallLit : C.wallDim;
         ctx.fillRect(px, py, TS, TS);
@@ -610,6 +957,17 @@ export default function App() {
         return enterPortal({ ...s, playerPos: newPos, grid: newGrid });
       }
 
+      if (isMerchantTile(tile)) {
+        const mType = merchantTypeFromTile(tile);
+        const stock = merchantStock(mType, s.deck);
+        return {
+          ...s, playerPos: newPos, grid: newGrid,
+          phase: 'SHOP',
+          activeMerchant: { type: mType, stock },
+          log: [...s.log, `${MERCHANT_TYPES[mType].name} — OPEN FOR BUSINESS`],
+        };
+      }
+
       return stepEnemies({ ...s, playerPos: newPos, grid: newGrid, screenShake: false, glitch: false });
     });
   }, []);
@@ -661,6 +1019,12 @@ export default function App() {
     const s = loadGame();
     if (s) setState(s);
   };
+
+  const [showInventory, setShowInventory] = useState(false);
+
+  const useItem = idx => setState(s => useInventoryItem(s, idx));
+  const buy     = item => setState(s => buyItem(s, item));
+  const closeShop = () => setState(s => ({ ...s, phase: 'EXPLORE', activeMerchant: null }));
 
   const { player, phase, log, combat: cbt, activeEnemy, deck, hallOfHeads } = state;
   const deckInfo = DECKS[deck];
@@ -751,9 +1115,19 @@ export default function App() {
       <div style={S.header}>
         <span>DECK {deck}: {deckInfo.name}</span>
         <span style={{color: contacts > 0 ? '#ff3914' : '#39ff14'}}>
-          {contacts > 0 ? `☠ ${contacts} CONTACTS` : '✓ CLEAR'}
+          {contacts > 0 ? `☠ ${contacts}` : '✓ CLEAR'}
         </span>
-        <span style={{fontSize:'11px'}}>GHOST OP</span>
+        <span style={{display:'flex', gap:'4px'}}>
+          <button style={{...S.cBtn, fontSize:'11px', padding:'1px 6px', margin:0}}
+            onClick={() => setShowInventory(v => !v)}>
+            BAG({player.inventory.length})
+          </button>
+          <button style={{...S.cBtn, fontSize:'11px', padding:'1px 6px', margin:0,
+            opacity: ['DEAD','HALL'].includes(phase) ? 0.35 : 1 }}
+            onClick={quickSave} disabled={['DEAD','HALL'].includes(phase)}>
+            SAVE
+          </button>
+        </span>
       </div>
 
       {/* Canvas */}
@@ -823,28 +1197,125 @@ export default function App() {
         {log.slice(-10).map((l, i) => <div key={i} style={{color: l.includes('DEAD')||l.includes('TERMINATED') ? '#ff3914' : '#39ff14'}}>{l}</div>)}
       </div>
 
-      {/* Quick Save / Load */}
-      <div style={{
-        width:'100%', maxWidth:`${W*TS}px`, display:'flex', gap:'4px', marginTop:'4px',
-      }}>
+      {/* Load button */}
+      <div style={{ width:'100%', maxWidth:`${W*TS}px`, display:'flex', gap:'4px', marginTop:'4px' }}>
         <button style={{
-          ...S.cBtn, flex:1, fontSize:'13px', padding:'4px',
-          opacity: ['DEAD','HALL'].includes(phase) ? 0.35 : 1,
-          cursor: ['DEAD','HALL'].includes(phase) ? 'default' : 'pointer',
-        }} onClick={quickSave} disabled={['DEAD','HALL'].includes(phase)}>
-          QUICK SAVE
-        </button>
-        <button style={{
-          ...S.cBtn, flex:1, fontSize:'13px', padding:'4px',
-          borderColor: hasSave ? '#39ff14' : '#1a4d1a',
-          color: hasSave ? '#39ff14' : '#1a4d1a',
+          ...S.cBtn, flex:1, fontSize:'12px', padding:'3px',
+          borderColor: hasSave ? '#39ff14' : '#1a4d1a', color: hasSave ? '#39ff14' : '#333',
           cursor: hasSave ? 'pointer' : 'default',
         }} onClick={quickLoad} disabled={!hasSave}>
-          QUICK LOAD{hasSave ? '' : ' —'}
+          {hasSave ? 'LOAD SAVE' : 'NO SAVE'}
         </button>
+        {player.equipped.weapon && (
+          <div style={{...S.stat, flex:1, fontSize:'11px', color:'#ffcc00', borderColor:'#554400'}}>
+            ⚔ {player.equipped.weapon.name} (+{player.equipped.weapon.fx.dmgBonus})
+          </div>
+        )}
+        {player.equipped.armor && (
+          <div style={{...S.stat, flex:1, fontSize:'11px', color:'#44aaff', borderColor:'#224466'}}>
+            🛡 {player.equipped.armor.name} (-{player.equipped.armor.fx.defense})
+          </div>
+        )}
       </div>
 
       {/* ── Overlays ── */}
+
+      {/* Inventory */}
+      {showInventory && (
+        <div style={{...S.overlay, zIndex:200}} onClick={() => setShowInventory(false)}>
+          <div style={{background:'#020402', border:'1px solid #1a4d1a', padding:'12px',
+            maxWidth:'320px', width:'100%', maxHeight:'80vh', overflowY:'auto'}}
+            onClick={e => e.stopPropagation()}>
+            <div style={{fontSize:'22px', marginBottom:'8px'}}>
+              ▣ INVENTORY ({player.inventory.length}/8)
+            </div>
+            {player.equipped.weapon && (
+              <div style={{fontSize:'12px', color:'#ffcc00', marginBottom:'4px'}}>
+                WEAPON: {player.equipped.weapon.name} (+{player.equipped.weapon.fx.dmgBonus} DMG)
+              </div>
+            )}
+            {player.equipped.armor && (
+              <div style={{fontSize:'12px', color:'#44aaff', marginBottom:'8px'}}>
+                ARMOR: {player.equipped.armor.name} (-{player.equipped.armor.fx.defense} DMG TAKEN)
+              </div>
+            )}
+            {player.inventory.length === 0
+              ? <div style={{color:'#333', padding:'16px 0', textAlign:'center'}}>EMPTY</div>
+              : player.inventory.map((it, i) => (
+                  <div key={i} style={{
+                    display:'flex', justifyContent:'space-between', alignItems:'center',
+                    borderBottom:'1px solid #1a4d1a', padding:'5px 0', fontSize:'13px',
+                  }}>
+                    <div>
+                      <div style={{color: it.cat==='food'?'#39ff14':it.cat==='misc'?'#aaffaa':'#fff'}}>
+                        {it.name}
+                      </div>
+                      <div style={{fontSize:'11px', color:'#555'}}>{it.desc}</div>
+                    </div>
+                    <button style={{...S.cBtn, fontSize:'12px', padding:'3px 8px', margin:0}}
+                      onClick={() => useItem(i)}>
+                      USE
+                    </button>
+                  </div>
+                ))
+            }
+            <button style={{...S.cBtn, width:'100%', marginTop:'10px', fontSize:'14px'}}
+              onClick={() => setShowInventory(false)}>
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Shop */}
+      {phase === 'SHOP' && state.activeMerchant && (() => {
+        const mt = MERCHANT_TYPES[state.activeMerchant.type];
+        return (
+          <div style={S.overlay}>
+            <div style={{background:'#020402', border:`1px solid ${mt.color}`, padding:'12px',
+              maxWidth:'340px', width:'100%', maxHeight:'85vh', overflowY:'auto'}}>
+              <div style={{fontSize:'24px', color: mt.color, marginBottom:'4px'}}>
+                {mt.char} {mt.name}
+              </div>
+              <div style={{fontSize:'13px', color:'#555', marginBottom:'10px'}}>
+                BALANCE: {player.dataShards} DATA SHARDS
+              </div>
+              {state.activeMerchant.stock.map((item, i) => {
+                const canAfford = player.dataShards >= item.price;
+                const catColor = item.cat==='weapon'?'#ffcc00':item.cat==='armor'?'#44aaff':item.cat==='food'?'#39ff14':'#aaffaa';
+                return (
+                  <div key={i} style={{
+                    display:'flex', justifyContent:'space-between', alignItems:'center',
+                    borderBottom:'1px solid #1a2a1a', padding:'6px 0', gap:'8px',
+                  }}>
+                    <div style={{flex:1}}>
+                      <div style={{color: catColor, fontSize:'13px'}}>{item.name}</div>
+                      <div style={{fontSize:'11px', color:'#555'}}>{item.desc}</div>
+                    </div>
+                    <button style={{
+                      ...S.cBtn, fontSize:'12px', padding:'3px 8px', margin:0, whiteSpace:'nowrap',
+                      opacity: canAfford ? 1 : 0.35,
+                      borderColor: canAfford ? '#39ff14' : '#333',
+                      cursor: canAfford ? 'pointer' : 'default',
+                    }} onClick={() => canAfford && buy(item)} disabled={!canAfford}>
+                      {item.price}◈
+                    </button>
+                  </div>
+                );
+              })}
+              <div style={{display:'flex', gap:'6px', marginTop:'10px'}}>
+                <button style={{...S.cBtn, flex:1, fontSize:'14px'}} onClick={closeShop}>
+                  LEAVE
+                </button>
+                <button style={{...S.cBtn, flex:1, fontSize:'14px'}} onClick={quickSave}>
+                  SAVE
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {phase === 'PORTAL' && state.portalRoll && (
         <div style={S.overlay}>
           <div style={{fontSize:'40px', color:'#cc00ff', marginBottom:'12px'}}>◉</div>
@@ -853,9 +1324,12 @@ export default function App() {
           <div style={{fontSize:'18px', color:'#cc00ff', marginBottom:'20px', maxWidth:'300px'}}>
             {state.portalRoll.consequence}
           </div>
-          <button style={{...S.oBtn, color:'#cc00ff', borderColor:'#cc00ff'}} onClick={advanceDeck}>
-            {deck < 3 ? `DESCEND TO DECK ${deck+1}` : 'ENSHRINE OPERATIVE'}
-          </button>
+          <div style={{display:'flex', gap:'8px'}}>
+            <button style={{...S.oBtn, color:'#cc00ff', borderColor:'#cc00ff'}} onClick={advanceDeck}>
+              {deck < 3 ? `DESCEND TO DECK ${deck+1}` : 'ENSHRINE OPERATIVE'}
+            </button>
+            <button style={{...S.oBtn, fontSize:'16px'}} onClick={quickSave}>SAVE</button>
+          </div>
         </div>
       )}
 
