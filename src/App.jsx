@@ -478,6 +478,9 @@ function merchantTypeFromTile(tile) {
 
 // ─── Enemy AI ─────────────────────────────────────────────────────────────────
 
+// Ranged enemies hold at distance 3; melee enemies close to 1
+const ENGAGE_DIST = { ranged: 3, melee: 1 };
+
 function stepEnemies(state) {
   const { grid, enemies, playerPos } = state;
   const moved = enemies.map(e => {
@@ -487,6 +490,9 @@ function stepEnemies(state) {
     const dx = playerPos.x - e.pos.x, dy = playerPos.y - e.pos.y;
     const dist = Math.abs(dx) + Math.abs(dy);
     if (dist > 9 || dist === 0) return e;
+
+    const stopDist = e.ranged ? ENGAGE_DIST.ranged : ENGAGE_DIST.melee;
+    if (dist <= stopDist) return e; // already in engage range — don't crowd
 
     const sx = dx !== 0 ? (dx > 0 ? 1 : -1) : 0;
     const sy = dy !== 0 ? (dy > 0 ? 1 : -1) : 0;
@@ -498,12 +504,25 @@ function stepEnemies(state) {
       if (np.x < 0 || np.x >= W || np.y < 0 || np.y >= H) continue;
       if (grid[np.y][np.x]?.type === 'wall') continue;
       if (enemies.some(o => o.alive && o.id !== e.id && o.pos.x === np.x && o.pos.y === np.y)) continue;
-      if (np.x === playerPos.x && np.y === playerPos.y) return e; // stop adjacent
+      if (np.x === playerPos.x && np.y === playerPos.y) return e;
       return { ...e, pos: np };
     }
     return e;
   });
-  return { ...state, enemies: moved };
+
+  // After enemies move, check if any ranged enemy is now in range and visible
+  // — they initiate combat proactively
+  const aggressor = moved.find(e => {
+    if (!e.alive || !e.ranged) return false;
+    const fog = grid[e.pos.y]?.[e.pos.x]?.fog;
+    if (fog === 'DARK') return false;
+    const dist = Math.abs(e.pos.x - playerPos.x) + Math.abs(e.pos.y - playerPos.y);
+    return dist <= ENGAGE_DIST.ranged + 1;
+  });
+
+  const newState = { ...state, enemies: moved };
+  if (aggressor) return startCombat(newState, aggressor);
+  return newState;
 }
 
 // ─── Combat ───────────────────────────────────────────────────────────────────
@@ -530,33 +549,56 @@ function startCombat(state, enemy) {
   return base;
 }
 
-function playerAttack(state) {
-  const rawRoll = roll2D20(state.forceNext);
-  let roll = rawRoll;
+// mode: 'shoot' (2D20, costs 1 cell) | 'melee' (d20 hit-check, free, lower dmg)
+function playerAttack(state, mode = 'shoot') {
   let newPlayer = { ...state.player };
-
-  // Phase Step: Ghost Operative upgrades first Signal Lost → Static Pass
-  if (roll.result === 'SIGNAL_LOST' && !newPlayer.phaseStepUsed) {
-    roll = { ...roll, result: 'STATIC_PASS' };
-    newPlayer = { ...newPlayer, phaseStepUsed: true };
-  }
-
   let dmg = 0, clog = [], glitch = false, screenShake = false;
 
-  const weaponBonus = (newPlayer.equipped?.weapon?.fx?.dmgBonus ?? 0);
+  const weaponBonus = newPlayer.equipped?.weapon?.fx?.dmgBonus ?? 0;
   const buffBonus   = newPlayer.dmgBuff ?? 0;
-  newPlayer = { ...newPlayer, dmgBuff: 0 }; // consume buff
+  newPlayer = { ...newPlayer, dmgBuff: 0 };
 
-  if (roll.result === 'CRITICAL_UPLINK') {
-    dmg = d6() + 4 + weaponBonus + buffBonus;
-    clog.push(`CRITICAL UPLINK [${roll.a}/${roll.b}] — ${dmg} DMG`);
-    screenShake = true;
-  } else if (roll.result === 'STATIC_PASS') {
-    dmg = d6() + weaponBonus + buffBonus;
-    clog.push(`STATIC PASS [${roll.a}/${roll.b}] — ${dmg} DMG`);
+  if (mode === 'shoot') {
+    // Costs 1 Power Cell
+    newPlayer = { ...newPlayer, powerCells: newPlayer.powerCells - 1 };
+
+    const rawRoll = roll2D20(state.forceNext);
+    let roll = rawRoll;
+
+    // Phase Step: upgrade first Signal Lost → Static Pass
+    if (roll.result === 'SIGNAL_LOST' && !newPlayer.phaseStepUsed) {
+      roll = { ...roll, result: 'STATIC_PASS' };
+      newPlayer = { ...newPlayer, phaseStepUsed: true };
+      clog.push('PHASE STEP ACTIVATED');
+    }
+
+    if (roll.result === 'CRITICAL_UPLINK') {
+      dmg = d6() + 4 + weaponBonus + buffBonus;
+      clog.push(`CRITICAL UPLINK [${roll.a}/${roll.b}] — ${dmg} DMG`);
+      screenShake = true;
+    } else if (roll.result === 'STATIC_PASS') {
+      dmg = d6() + weaponBonus + buffBonus;
+      clog.push(`STATIC PASS [${roll.a}/${roll.b}] — ${dmg} DMG`);
+    } else {
+      clog.push(`SIGNAL LOST [${roll.a}/${roll.b}] — SHOT MISSED`);
+      glitch = true;
+    }
+
+    // Tag remaining cells in log
+    clog.push(`⚡ ${newPlayer.powerCells} CELLS REMAINING`);
+
   } else {
-    clog.push(`SIGNAL LOST [${roll.a}/${roll.b}] — MISS`);
-    glitch = true;
+    // MELEE — free, single d20 check
+    const roll = d20();
+    const hit = roll >= 10;
+    if (hit) {
+      dmg = Math.ceil(d6() / 2) + Math.floor(weaponBonus / 2) + buffBonus; // half weapon bonus
+      clog.push(`MELEE [${roll}] — ${dmg} DMG`);
+      if (roll >= 18) { dmg += 2; clog[0] = `MELEE CRIT [${roll}] — ${dmg} DMG`; screenShake = true; }
+    } else {
+      clog.push(`MELEE [${roll}] — WHIFFED`);
+      glitch = true;
+    }
   }
 
   const enemy = { ...state.activeEnemy, hp: Math.max(0, state.activeEnemy.hp - dmg) };
@@ -567,22 +609,13 @@ function playerAttack(state) {
   if (dead) newPlayer = { ...newPlayer, dataShards: newPlayer.dataShards + 1 };
 
   const base = {
-    ...state,
-    enemies,
-    player: newPlayer,
-    rollResult: roll,
-    glitch,
-    screenShake,
-    forceNext: null,
-    combat: state.combat ? {
-      ...state.combat,
-      log: [...state.combat.log, ...clog],
-    } : null,
+    ...state, enemies, player: newPlayer,
+    rollResult: null, glitch, screenShake, forceNext: null,
+    combat: state.combat ? { ...state.combat, log: [...state.combat.log, ...clog] } : null,
     log: [...state.log, ...clog],
   };
 
   if (dead) return { ...base, phase: 'EXPLORE', activeEnemy: null, combat: null };
-  // Return with turn still 'PLAYER' — doCombatAction will call enemyAttack immediately
   return { ...base, activeEnemy: enemy };
 }
 
@@ -593,18 +626,21 @@ function enemyAttack(state) {
 
   const combatLog = state.combat?.log ?? [];
   const roll = d20();
-  const hit = roll >= 10;
+  const hitThreshold = enemy.ranged ? 8 : 10;   // ranged enemies are accurate
+  const hit = roll >= hitThreshold;
   let dmg = 0, clog = [], screenShake = false;
 
   if (hit) {
-    const armorDef  = state.player.equipped?.armor?.fx?.defense ?? 0;
-    dmg = Math.max(0, Math.ceil(enemy.atk / 2) + (roll >= 18 ? 2 : 0) - armorDef);
-    if (state.combat?.coverActive) dmg = Math.max(0, dmg - 2);
-    const tags = [state.combat?.coverActive && 'COVER', armorDef > 0 && `ARM-${armorDef}`].filter(Boolean).join(' ');
-    clog.push(`${enemy.name} [${roll}] — ${dmg} DMG${tags ? ` (${tags})` : ''}`);
+    const armorDef = state.player.equipped?.armor?.fx?.defense ?? 0;
+    // Cover halves ranged damage but barely helps vs melee
+    const coverReduction = state.combat?.coverActive ? (enemy.ranged ? Math.ceil(enemy.atk / 4) : 1) : 0;
+    dmg = Math.max(0, Math.ceil(enemy.atk / 2) + (roll >= 18 ? 2 : 0) - armorDef - coverReduction);
+    const atkType = enemy.ranged ? 'RANGED' : 'MELEE';
+    const tags = [state.combat?.coverActive && `COVER-${coverReduction}`, armorDef > 0 && `ARM-${armorDef}`].filter(Boolean).join(' ');
+    clog.push(`${enemy.name} ${atkType} [${roll}] — ${dmg} DMG${tags ? ` (${tags})` : ''}`);
     screenShake = true;
   } else {
-    clog.push(`${enemy.name} [${roll}] — MISS`);
+    clog.push(`${enemy.name} [${roll}] — MISSED`);
   }
 
   const newHp = Math.max(0, state.player.hp - dmg);
@@ -633,43 +669,60 @@ function doCombatAction(state, action) {
   if (state.phase !== 'COMBAT' || state.combat?.turn !== 'PLAYER') return state;
 
   const combatLog = state.combat.log ?? [];
+  const enemy = state.activeEnemy;
 
-  if (action === 'ATTACK') {
-    const afterAttack = playerAttack(state);
-    // If combat is still live, resolve enemy counter immediately
-    if (afterAttack.phase === 'COMBAT') return enemyAttack(afterAttack);
-    return afterAttack;
+  // SHOOT — 2D20, costs 1 Power Cell
+  if (action === 'SHOOT') {
+    if (state.player.powerCells <= 0) {
+      return { ...state, combat: { ...state.combat, log: [...combatLog, 'OUT OF CELLS — USE MELEE'] } };
+    }
+    const after = playerAttack(state, 'shoot');
+    if (after.phase === 'COMBAT') return enemyAttack(after);
+    return after;
   }
 
+  // MELEE — free, d20 hit-check, reduced damage
+  if (action === 'MELEE') {
+    const after = playerAttack(state, 'melee');
+    if (after.phase === 'COMBAT') return enemyAttack(after);
+    return after;
+  }
+
+  // DODGE — evade on d20 ≥12; ranged enemies are harder to dodge (≥14)
   if (action === 'DODGE') {
+    const threshold = enemy?.ranged ? 14 : 12;
     const roll = d20();
-    const evaded = roll >= 12;
-    const clog = evaded ? [`DODGE [${roll}] — EVADED`] : [`DODGE [${roll}] — EXPOSED`];
+    const evaded = roll >= threshold;
+    const clog = evaded
+      ? [`DODGE [${roll}] — EVADED`]
+      : [`DODGE [${roll}] — EXPOSED (needed ${threshold})`];
     const withLog = { ...state, combat: { ...state.combat, log: [...combatLog, ...clog] } };
-    // Dodge success: enemy whiffs, player keeps their turn
-    if (evaded) return withLog;
-    // Dodge fail: enemy gets a free hit
+    if (evaded) return withLog; // player keeps turn
     return enemyAttack(withLog);
   }
 
+  // COVER — take cover; greatly reduces ranged damage, barely helps vs melee
   if (action === 'COVER') {
+    const note = enemy?.ranged
+      ? 'COVER TAKEN — ranged DMG halved next hit'
+      : 'COVER TAKEN — melee DMG -1 next hit';
     const withCover = {
       ...state,
-      combat: { ...state.combat, coverActive: true, log: [...combatLog, 'COVER TAKEN — next hit -2 DMG'] },
+      combat: { ...state.combat, coverActive: true, log: [...combatLog, note] },
     };
     return enemyAttack(withCover);
   }
 
+  // JAM — scramble enemy sensors; very effective vs ranged (≥10), risky vs melee (≥17)
   if (action === 'JAM') {
+    const threshold = enemy?.ranged ? 10 : 17;
     const roll = d20();
-    const ok = roll >= 15;
+    const ok = roll >= threshold;
     const clog = ok
-      ? [`JAM [${roll}] — ${state.activeEnemy?.name} STUNNED`]
-      : [`JAM [${roll}] — FAILED`];
+      ? [`JAM [${roll}] — ${enemy?.name} SIGNAL SCRAMBLED`]
+      : [`JAM [${roll}] — JAM FAILED (needed ${threshold})`];
     const withJam = { ...state, combat: { ...state.combat, log: [...combatLog, ...clog] } };
-    // Jam success: enemy stunned, player keeps turn
-    if (ok) return withJam;
-    // Jam fail: enemy retaliates
+    if (ok) return withJam; // enemy stunned, player keeps turn
     return enemyAttack(withJam);
   }
 
@@ -1173,11 +1226,49 @@ export default function App() {
           <div style={{fontSize:'11px', color:'#888', marginBottom:'5px', minHeight:'28px'}}>
             {cbt?.log.slice(-2).map((l,i) => <div key={i}>{l}</div>)}
           </div>
-          <div>
-            <button style={S.cBtn} onClick={() => combat('ATTACK')}>ATTACK</button>
-            <button style={S.cBtn} onClick={() => combat('DODGE')}>DODGE</button>
-            <button style={S.cBtn} onClick={() => combat('COVER')}>COVER</button>
-            <button style={S.cBtn} onClick={() => combat('JAM')}>JAM</button>
+          {/* Enemy type tag */}
+          {activeEnemy?.ranged && (
+            <div style={{fontSize:'11px', color:'#ffcc00', marginBottom:'4px'}}>
+              ◈ RANGED — JAM easy, COVER effective, DODGE hard
+            </div>
+          )}
+          <div style={{display:'flex', flexWrap:'wrap', gap:'3px'}}>
+            {/* SHOOT */}
+            <button style={{
+              ...S.cBtn,
+              opacity: player.powerCells <= 0 ? 0.35 : 1,
+              borderColor: player.powerCells > 0 ? '#39ff14' : '#333',
+              position: 'relative',
+            }}
+              onClick={() => combat('SHOOT')}
+              disabled={player.powerCells <= 0}>
+              SHOOT {player.powerCells > 0 ? `⚡${player.powerCells}` : '—'}
+            </button>
+            {/* MELEE */}
+            <button style={S.cBtn} onClick={() => combat('MELEE')}>MELEE</button>
+            {/* DODGE */}
+            <button style={{
+              ...S.cBtn,
+              borderColor: activeEnemy?.ranged ? '#886600' : '#39ff14',
+            }} onClick={() => combat('DODGE')}>
+              DODGE {activeEnemy?.ranged ? '⚠' : ''}
+            </button>
+            {/* COVER */}
+            <button style={{
+              ...S.cBtn,
+              borderColor: activeEnemy?.ranged ? '#ffcc00' : '#333',
+              color: activeEnemy?.ranged ? '#ffcc00' : '#555',
+            }} onClick={() => combat('COVER')}>
+              COVER {activeEnemy?.ranged ? '✓' : ''}
+            </button>
+            {/* JAM */}
+            <button style={{
+              ...S.cBtn,
+              borderColor: activeEnemy?.ranged ? '#39ff14' : '#333',
+              color: activeEnemy?.ranged ? '#39ff14' : '#555',
+            }} onClick={() => combat('JAM')}>
+              JAM {activeEnemy?.ranged ? '✓✓' : ''}
+            </button>
           </div>
         </div>
       )}
