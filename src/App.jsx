@@ -46,6 +46,70 @@ const PORTAL_TABLE = [
   'CRITICAL UPLINK — next roll auto-succeeds',
 ];
 
+// ─── Operative Names ──────────────────────────────────────────────────────────
+
+const FIRST_NAMES = [
+  'KAEL','MARA','VOSS','DACE','RYNN','TORV','SABLE','ZARA','ORYN','LYSS',
+  'RAEL','BRIX','NOTH','CADE','SKYE','MIRE','VALE','GRIM','SEREN','TAL',
+  'WREN','FAYE','DUSK','COLE','NIRA','JACE','RELL','SHIV','BANE','KIRA',
+];
+const LAST_NAMES = [
+  'CROSS','NULL','GREY','IRON','SHARP','VOID','PHASE','STATIC','SCAR','DUST',
+  'ECHO','WIRE','DARK','CHAIN','RUIN','SALT','SIGNAL','BLANK','BLEED','COLD',
+  'FRAG','SPLIT','ZERO','BURN','HAZE','FELL','DRIFT','MURK','TORN','GASH',
+];
+
+function generateName() {
+  const f = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+  const l = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+  return `${f} ${l}`;
+}
+
+// ─── Enemy Portraits (ASCII, 9×6 chars, VT323 monospace) ─────────────────────
+
+const ENEMY_PORTRAITS = {
+  shambler: [
+    ' .----.',
+    '(X)  (X)',
+    ' \\ -- /',
+    '  |  | ',
+    ' /\\  /\\',
+    '/  \\/  \\',
+  ],
+  drone_sentry: [
+    ' .====.',
+    '( ◉  ◉ )',
+    ' [====]',
+    '  /||\\ ',
+    ' / || \\',
+    '/__  __\\',
+  ],
+  void_hound: [
+    ' ^     ^',
+    '(o . . o)',
+    ' \\_~~~_/',
+    ' /|   |\\',
+    '/ |   | \\',
+    '  |___|  ',
+  ],
+  augment_berserker: [
+    '╔══╦══╗',
+    '║◉  ◉║',
+    '╠══╬══╣',
+    '║ ΞΞΞΞ║',
+    '╠══╩══╣',
+    '╚═════╝',
+  ],
+  phantom_echo: [
+    ' ░░░░░░ ',
+    '░(○  ○)░',
+    '░ \\__/ ░',
+    ' ░░~~░░ ',
+    '  ░░░░  ',
+    '   ░░   ',
+  ],
+};
+
 // ─── Item Catalog ─────────────────────────────────────────────────────────────
 // effect keys: heal|maxhp|cells|shards|phaseRestore|forceCrit|dmgBuff|defense (equip)|dmgBonus (equip)
 
@@ -423,11 +487,12 @@ function revealFog(grid, pos, radius = 4) {
 
 function makePlayer() {
   return {
+    name: generateName(),
     hp: 20, maxHp: 20, powerCells: 12, dataShards: 0, corruptedFragments: 0,
     phaseStepUsed: false,
-    inventory: [],          // array of { id, ...itemDef }
+    inventory: [],
     equipped: { weapon: null, armor: null },
-    dmgBuff: 0,             // temp bonus applied to next attack
+    dmgBuff: 0,
   };
 }
 
@@ -863,6 +928,7 @@ function loadGame() {
 
 function enshrine(state) {
   const entry = {
+    name: state.player.name,
     date: new Date().toLocaleDateString(),
     deck: state.deck,
     hp: state.player.hp,
@@ -1170,16 +1236,20 @@ export default function App() {
         <span style={{color: contacts > 0 ? '#ff3914' : '#39ff14'}}>
           {contacts > 0 ? `☠ ${contacts}` : '✓ CLEAR'}
         </span>
-        <span style={{display:'flex', gap:'4px'}}>
-          <button style={{...S.cBtn, fontSize:'11px', padding:'1px 6px', margin:0}}
-            onClick={() => setShowInventory(v => !v)}>
-            BAG({player.inventory.length})
-          </button>
-          <button style={{...S.cBtn, fontSize:'11px', padding:'1px 6px', margin:0,
-            opacity: ['DEAD','HALL'].includes(phase) ? 0.35 : 1 }}
-            onClick={quickSave} disabled={['DEAD','HALL'].includes(phase)}>
-            SAVE
-          </button>
+
+        <span style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'2px'}}>
+          <span style={{fontSize:'11px', color:'#39ccff', letterSpacing:'1px'}}>{player.name}</span>
+          <span style={{display:'flex', gap:'4px'}}>
+            <button style={{...S.cBtn, fontSize:'11px', padding:'1px 6px', margin:0}}
+              onClick={() => setShowInventory(v => !v)}>
+              BAG({player.inventory.length})
+            </button>
+            <button style={{...S.cBtn, fontSize:'11px', padding:'1px 6px', margin:0,
+              opacity: ['DEAD','HALL'].includes(phase) ? 0.35 : 1 }}
+              onClick={quickSave} disabled={['DEAD','HALL'].includes(phase)}>
+              SAVE
+            </button>
+          </span>
         </span>
       </div>
 
@@ -1217,21 +1287,47 @@ export default function App() {
       {/* Combat panel */}
       {phase === 'COMBAT' && activeEnemy && (
         <div style={S.combatPanel}>
-          <div style={{color:'#ff3914', marginBottom:'4px'}}>
-            ⚔ {activeEnemy.name} — {activeEnemy.hp}/{activeEnemy.maxHp} HP
-            <div style={S.bar()}>
-              <div style={S.barFill(activeEnemy.hp, activeEnemy.maxHp, '#ff3914')} />
+          {/* Portrait + stats row */}
+          <div style={{display:'flex', gap:'8px', marginBottom:'6px', alignItems:'flex-start'}}>
+            {/* Headshot portrait */}
+            <pre style={{
+              margin:0, padding:'4px 5px',
+              border:'1px solid #ff3914',
+              background:'#0a0000',
+              color:'#ff3914',
+              fontFamily:"'VT323','Courier New',monospace",
+              fontSize:'9px', lineHeight:'11px',
+              letterSpacing:'1px',
+              flexShrink:0,
+              userSelect:'none',
+            }}>
+              {(ENEMY_PORTRAITS[activeEnemy.key] ?? ENEMY_PORTRAITS.shambler).join('\n')}
+            </pre>
+            {/* Name, HP bar, type tag */}
+            <div style={{flex:1, minWidth:0}}>
+              <div style={{color:'#ff3914', fontSize:'14px', marginBottom:'3px'}}>
+                ⚔ {activeEnemy.name}
+              </div>
+              <div style={{fontSize:'12px', color:'#888', marginBottom:'3px'}}>
+                HP {activeEnemy.hp}/{activeEnemy.maxHp}
+              </div>
+              <div style={{background:'#1a0000', height:'4px', marginBottom:'5px'}}>
+                <div style={{
+                  background:'#ff3914',
+                  width:`${Math.max(0,(activeEnemy.hp/activeEnemy.maxHp)*100)}%`,
+                  height:'100%', transition:'width 0.2s',
+                }}/>
+              </div>
+              {activeEnemy?.ranged && (
+                <div style={{fontSize:'10px', color:'#ffcc00'}}>
+                  ◈ RANGED — JAM✓✓ COVER✓ DODGE⚠
+                </div>
+              )}
             </div>
           </div>
-          <div style={{fontSize:'11px', color:'#888', marginBottom:'5px', minHeight:'28px'}}>
+          <div style={{fontSize:'11px', color:'#666', marginBottom:'5px', minHeight:'24px', borderTop:'1px solid #1a0000', paddingTop:'4px'}}>
             {cbt?.log.slice(-2).map((l,i) => <div key={i}>{l}</div>)}
           </div>
-          {/* Enemy type tag */}
-          {activeEnemy?.ranged && (
-            <div style={{fontSize:'11px', color:'#ffcc00', marginBottom:'4px'}}>
-              ◈ RANGED — JAM easy, COVER effective, DODGE hard
-            </div>
-          )}
           <div style={{display:'flex', flexWrap:'wrap', gap:'3px'}}>
             {/* SHOOT */}
             <button style={{
@@ -1426,7 +1522,11 @@ export default function App() {
 
       {phase === 'DEAD' && (
         <div style={S.overlay}>
-          <div style={{fontSize:'56px', color:'#ff3914', marginBottom:'12px'}}>☠</div>
+          <div style={{fontSize:'56px', color:'#ff3914', marginBottom:'8px'}}>☠</div>
+          <div style={{fontSize:'22px', color:'#39ccff', marginBottom:'4px', letterSpacing:'2px'}}>
+            {player.name}
+          </div>
+          <div style={{fontSize:'13px', color:'#555', marginBottom:'12px'}}>GHOST OPERATIVE</div>
           <div style={{fontSize:'32px', marginBottom:'8px', color:'#ff3914'}}>SIGNAL TERMINATED</div>
           <div style={{fontSize:'16px', color:'#555', marginBottom:'8px'}}>
             DECK {deck} — {state.enemies.filter(e=>!e.alive).length} CONTACTS NEUTRALISED
@@ -1452,8 +1552,13 @@ export default function App() {
                     borderBottom:'1px solid #1a4d1a', padding:'8px',
                     textAlign:'left', fontSize:'13px',
                   }}>
-                    <div style={{color:'#39ff14'}}>DECK {h.deck} CLEARED — {h.date}</div>
-                    <div style={{color:'#555', fontSize:'12px'}}>
+                    <div style={{color:'#39ccff', fontSize:'14px', letterSpacing:'1px'}}>
+                      {h.name ?? 'UNKNOWN OPERATIVE'}
+                    </div>
+                    <div style={{color:'#39ff14', fontSize:'12px'}}>
+                      DECK {h.deck} CLEARED — {h.date}
+                    </div>
+                    <div style={{color:'#555', fontSize:'11px'}}>
                       HP {h.hp} · SHARDS {h.shards} · KILLS {h.kills}
                     </div>
                   </div>
